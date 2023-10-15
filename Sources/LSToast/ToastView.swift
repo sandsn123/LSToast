@@ -271,7 +271,7 @@ struct HudTip: View {
                     .multilineTextAlignment(.center)
             }
         }
-        .padding(5)
+        .padding(10)
         .frame(minWidth: 120)
         .background(
             blur
