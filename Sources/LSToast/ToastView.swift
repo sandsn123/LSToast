@@ -110,7 +110,7 @@ struct ToastStateView: View {
                 self.hostSize = rect.size
             }
         }
-        return EmptyView()
+        return Color.clear
     }
     
     @ViewBuilder
