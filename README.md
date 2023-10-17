@@ -18,6 +18,13 @@
          @Toast var toast  // default      
          ...
     }
+</pre>
+</td>
+</tr>
+</table>
+
+
+
 <table width="100%">
 <th>Add ```.toast(with: _toast)```  at the end of the view you want to show toast.</th>
 <tr>
