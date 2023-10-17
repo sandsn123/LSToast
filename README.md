@@ -30,8 +30,7 @@
 <tr>
 <td valign="top">
 <pre lang="Swift">
-    ZStack { ... }
-			.toast(with: _toast)
+    ZStack { ... }.toast(with: _toast)
 </pre>
 </td>
 </tr>
