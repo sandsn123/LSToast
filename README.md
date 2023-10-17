@@ -1,3 +1,15 @@
+## Requirements
+- Xcode 12.x
+- Swift 5.x
+
+
+## Installation
+
+### [Swift Package Manager (SPM)](https://github.com/ashleymills/Reachability.swift#swift-package-manager-spm)
+
+1. File -> Swift Packages -> Add Package Dependency...
+2. Enter package URL :https://github.com/sandsn123/LSToast.git, choose the latest release
+
 ## Usage
 
 **LSToast** easy way to show toast in SwitUI:
