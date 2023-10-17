@@ -5,12 +5,15 @@ import SwiftUI
 
 struct ToastDemo: View {
     
-    @Toast([
-        // regiular message
-        .message(titleColor: .blue, textColor: .red),
-        // loading
-        .loading(tintColor: .blue)
-    ])
+    // custom style
+//    @Toast([
+//        // regiular message
+//        .message(titleColor: .blue, textColor: .red),
+//        // loading
+//        .loading(tintColor: .blue)
+//    ])
+    
+    @Toast  // default
     var toast
     
     var body: some View {
@@ -20,7 +23,12 @@ struct ToastDemo: View {
             Color.blue
                 .frame(width: 100, height: 45)
                 .onTapGesture {
-                    action()
+                    toast = .loading("Loading...")
+                    
+                    Task {
+                        try? await Task.sleep(nanoseconds: 2_000_000_000)
+                        toast = .error("Error!!!")
+                    }
                 }
    
             Button(action: {
@@ -38,20 +46,6 @@ struct ToastDemo: View {
             .frame(width: 100, height: 45)
         }
         .toast(with: _toast)
-    }
-    
-    func action(_ geo: GeometryProxy? = nil) {
-        toast = .loading("loading...")
-        
-//        toast = .mesage("Title", text: "text")
-//        print("top - \(geo?.safeAreaInsets.top)")
-        
-//        toast = .complete("Successed!!")
-
-//        Task {
-//            try? await Task.sleep(nanoseconds: 2_000_000_000)
-//            toast = .error("Error!!!")
-//        }
     }
 }
 
