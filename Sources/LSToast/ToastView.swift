@@ -291,3 +291,49 @@ struct HudTip: View {
         #endif
     }
 }
+
+class DemoModel: ObservableObject {
+    @ToastPublished([
+        .complete(titleColor: .blue)
+    ]) var toast
+
+    var toastConfig: ToastConfig {
+        _toast.config
+    }
+}
+
+@available(iOS 14.0, *)
+struct Demo: View {
+    @StateObject var vm: DemoModel = .init()
+//    @Toast var toast
+    var body: some View {
+        ZStack {
+            
+            VStack {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 200, height: 200)
+                    .onTapGesture(perform: {
+                        vm.toast = .loading("Loading...")
+                    })
+                
+                Button(action: {
+                    vm.toast = .dismiss
+                }, label: {
+                    Text("Dismiss")
+                })
+            }
+        }
+//        .toast(with: _toast)
+        .toast(with: $vm.toast, config: vm.toastConfig)
+    }
+}
+
+#Preview {
+    if #available(iOS 14.0, *) {
+        return Demo()
+    } else {
+        // Fallback on earlier versions
+        return EmptyView()
+    }
+}
