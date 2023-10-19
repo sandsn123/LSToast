@@ -14,6 +14,8 @@
 
 **LSToast** easy way to show toast in SwitUI:
 
+**Used in view:**
+
 <table width="100%">
 <th>Add ```@Toast var toast``` in your SwiftUI view</th>
 <tr>
@@ -47,7 +49,6 @@
 </td>
 </tr>
 </table>
-
 <table width="100%">
 <th>Assign a value to toast.</th>
 <tr>
@@ -59,6 +60,32 @@
 </td>
 </tr>
 </table>
+
+
+
+**Used in ObservableObject:**
+
+<table width="100%">
+<th>use @ToastPublished.</th>
+<tr>
+<td valign="top">
+<pre lang="Swift">
+ class DemoModel: ObservableObject {
+    @ToastPublished([
+        .complete(titleColor: .blue)
+    ]) var toast
+}
+struct DemoView: View {
+	 var body: some View {
+				// your view
+			 .toast(with: $vm.toast, config: vm.$toast.config)
+	 }
+}
+</pre>
+</td>
+</tr>
+</table>
+
 
 ![](https://media.giphy.com/media/00tJvWPXnTL0rS7DVH/giphy.gif)
 

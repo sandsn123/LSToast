@@ -7,36 +7,14 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 @propertyWrapper
 public struct ToastPublished {
  
-    public var wrappedValue: ToastType = .dismiss {
-        willSet {  // 修改 wrappedValue 之前
-            publisher.subject.send(newValue)
-        }
-    }
+    public var wrappedValue: ToastType = .dismiss
 
-    public var projectedValue: Publisher {
-        publisher
-    }
-
-    private var publisher: Publisher = .init(.dismiss)
-
-    public struct Publisher: Combine.Publisher {
-        public typealias Output = ToastType
-        public typealias Failure = Never
-
-        var subject: CurrentValueSubject<ToastType, Never> // PassthroughSubject 会缺少初始话赋值的调用
-
-        public func receive<S>(subscriber: S) where S: Subscriber, Self.Failure == S.Failure, Self.Output == S.Input {
-            subject.subscribe(subscriber)
-        }
-
-        init(_ output: ToastType) {
-            subject = .init(output)
-        }
-    }
+    public var projectedValue: ToastPublished { self }
     
     public var isPresenting: Bool {
         wrappedValue != .dismiss

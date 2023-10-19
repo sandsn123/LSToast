@@ -296,10 +296,6 @@ class DemoModel: ObservableObject {
     @ToastPublished([
         .complete(titleColor: .blue)
     ]) var toast
-
-    var toastConfig: ToastConfig {
-        _toast.config
-    }
 }
 
 @available(iOS 14.0, *)
@@ -325,7 +321,7 @@ struct Demo: View {
             }
         }
 //        .toast(with: _toast)
-        .toast(with: $vm.toast, config: vm.toastConfig)
+        .toast(with: $vm.toast, config: vm.$toast.config)
     }
 }
 
