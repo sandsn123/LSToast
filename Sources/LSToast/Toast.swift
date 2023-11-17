@@ -108,16 +108,4 @@ public extension View {
     func toast(with type: Binding<ToastType>, config: ToastConfig) -> some View {
         modifier(ToastModifier(type: type, config: config))
     }
-    
-    @ViewBuilder
-    func onValueChanged<T: Equatable>(of value: T, perform: @escaping (T) -> Void) -> some View {
-        if #available(iOS 14.0, *) {
-            self.onChange(of: value, perform: perform)
-        } else {
-            self.onReceive(Just(value)) { (value) in
-                perform(value)
-            }
-        }
-    }
 }
-

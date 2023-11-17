@@ -10,11 +10,11 @@ import Combine
 import SwiftUI
 
 @propertyWrapper
-public struct ToastPublished {
+public struct ToastProvider {
  
     public var wrappedValue: ToastType = .dismiss
 
-    public var projectedValue: ToastPublished { self }
+    public var projectedValue: ToastProvider { self }
     
     public var isPresenting: Bool {
         wrappedValue != .dismiss

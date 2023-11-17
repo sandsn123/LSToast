@@ -11,12 +11,18 @@ let package = Package(
         .library(
             name: "LSToast",
             targets: ["LSToast"]),
+    ], 
+    dependencies: [
+        .package(url: "https://github.com/sandsn123/SwiftUIMisc.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "LSToast"),
+            name: "LSToast",
+        dependencies: [
+            .product(name: "SwiftUIMisc", package: "SwiftUIMisc")
+        ]),
         .testTarget(
             name: "LSToastTests",
             dependencies: ["LSToast"]),

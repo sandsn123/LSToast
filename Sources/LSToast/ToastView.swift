@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIMisc
 
 struct ToastModifier: ViewModifier {
     
@@ -293,7 +294,7 @@ struct HudTip: View {
 }
 
 class DemoModel: ObservableObject {
-    @ToastPublished([
+    @ToastProvider([
         .complete(titleColor: .blue)
     ]) var toast
 }
