@@ -115,8 +115,8 @@ struct ToastStateView: View {
     @ViewBuilder
     var stateView: some View {
         switch toast.style {
-        case .loading(let style, let text):
-            loadingView(style: style)
+        case .loading(let text):
+            loadingView
                 .modifier(TitleBackgroundModifier(title: text, titleColor: toast.config.loadingTintColor))
                 .transition(.opacity)
         case .error(let desc):
@@ -138,11 +138,11 @@ struct ToastStateView: View {
         }
     }
     
-    func loadingView(style: ActivityIndicator.Style) -> some View {
+    var loadingView: some View {
 #if os(macOS)
-        ActivityIndicator(style: style)
+        ActivityIndicator(style: toast.config.indicatorStyle)
 #else
-        ActivityIndicator(style: style, color: toast.config.loadingTintColor.uiColor())
+        ActivityIndicator(style: toast.config.indicatorStyle, color: toast.config.loadingTintColor.uiColor())
 #endif
     }
 }

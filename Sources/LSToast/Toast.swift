@@ -13,7 +13,7 @@ import Combine
 import SwiftUIMisc
 
 public enum ToastStyle {
-    case loading(_ style: ActivityIndicator.Style = .medium, _ text: String? = nil)
+    case loading(_ text: String? = nil)
     case error(String)
     case complete(String)
     case mesage(_ title: String? = nil, text: String? = nil)
@@ -23,8 +23,8 @@ public enum ToastStyle {
 extension ToastStyle: Equatable {
     public static func == (lhs: ToastStyle, rhs: ToastStyle) -> Bool {
         switch lhs {
-        case .loading(_, let lstr):
-            if case .loading(_, let rstr) = rhs {
+        case .loading(let lstr):
+            if case .loading(let rstr) = rhs {
                 return lstr == rstr
             }
             return false
@@ -77,6 +77,11 @@ public struct ToastAction: Equatable {
     private(set) var style: ToastStyle = .dismiss
     public let config: ToastConfig
     
+    init(style: ToastStyle, config: ToastConfig = .init()) {
+        self.style = style
+        self.config = config
+    }
+    
     mutating public func callAsFunction(_ value: ToastStyle) {
         style = value
     }
@@ -96,7 +101,7 @@ public struct ToastConfig {
     public var errorTitleColor = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1))
     public var loadingTintColor = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1))
     
-    public var indicatorStyle: ActivityIndicator.Style = .medium
+    public var indicatorStyle: ActivityIndicator.Style = .large
     
     public init(options: [Option] = []) {
         for option in options {

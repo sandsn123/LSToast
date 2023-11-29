@@ -5,7 +5,8 @@ import SwiftUI
 
 class DemoModel: ObservableObject {
     @ToastProvider([
-        .complete(titleColor: .red)
+        .complete(titleColor: .red),
+        .loading(style: .large, tintColor: .red)
     ]) var toast
 }
 
@@ -21,7 +22,7 @@ struct Demo: View {
                     .fill(.red)
                     .frame(width: 200, height: 200)
                     .onTapGesture(perform: {
-                        vm.toast(.complete("Success!!!"))
+                        vm.toast(.loading("Success!!!"))
                     })
                 
                 Button(action: {

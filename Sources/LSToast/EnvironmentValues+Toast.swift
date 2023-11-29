@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-extension EnvironmentValues {
-    var toast: Toast {
+public extension EnvironmentValues {
+    var toast: ToastAction {
         get {
             return self[ToastEnvironmentKey.self]
         }
@@ -19,5 +19,5 @@ extension EnvironmentValues {
 }
 
 struct ToastEnvironmentKey: EnvironmentKey {
-    static var defaultValue: Toast = .init()
+    static var defaultValue: ToastAction = .init(style: .dismiss)
 }
