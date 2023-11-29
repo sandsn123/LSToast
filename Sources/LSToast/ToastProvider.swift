@@ -11,31 +11,27 @@ import SwiftUI
 
 @propertyWrapper
 public struct ToastProvider {
- 
-    public var wrappedValue: ToastType = .dismiss
-
-    public var projectedValue: ToastProvider { self }
+    public var wrappedValue: ToastState
     
     public var isPresenting: Bool {
-        wrappedValue != .dismiss
+        wrappedValue.action != .dismiss
     }
     
-    public let config: ToastConfig
     public init(_ options: [ToastConfig.Option] = []) {
-        self.config = ToastConfig(options: options)
+        self.wrappedValue = ToastState(action: .dismiss, config: ToastConfig(options: options))
     }
     
     public static subscript<OuterSelf: ObservableObject>(
         _enclosingInstance observed: OuterSelf,
-        wrapped wrappedKeyPath: ReferenceWritableKeyPath<OuterSelf, ToastType>,
+        wrapped wrappedKeyPath: ReferenceWritableKeyPath<OuterSelf, ToastState>,
         storage storageKeyPath: ReferenceWritableKeyPath<OuterSelf, Self>
-    ) -> ToastType {
+    ) -> ToastState {
         get {
             observed[keyPath: storageKeyPath].wrappedValue
         }
         set {
             if let subject = observed.objectWillChange as? ObservableObjectPublisher {
-                subject.send() // 修改 wrappedValue 之前
+                subject.send()
                 observed[keyPath: storageKeyPath].wrappedValue = newValue
             }
         }

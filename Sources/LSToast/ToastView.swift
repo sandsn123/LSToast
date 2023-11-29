@@ -10,19 +10,18 @@ import SwiftUIMisc
 
 struct ToastModifier: ViewModifier {
     
-    @Binding var toastType: ToastType
-    var config: ToastConfig
+    @Binding var toast: ToastState
+
     @State var appearWorkItem: DispatchWorkItem?
     
-    init(type: Binding<ToastType>, config: ToastConfig) {
-        self._toastType = Binding(get: {
+    init(type: Binding<ToastState>) {
+        self._toast = Binding(get: {
             type.wrappedValue
         }, set: { value in
             withAnimation {
                 type.wrappedValue = value
             }
         })
-        self.config = config
     }
     
     func body(content: Content) -> some View {
@@ -33,8 +32,8 @@ struct ToastModifier: ViewModifier {
     }
 
     var stateView: some View {
-        ToastStateView(toastType: toastType, config: config)
-            .onValueChanged(of: toastType, perform: { newValue in
+        ToastStateView(toast: toast)
+            .onValueChanged(of: toast, perform: { newValue in
                 if let appearWorkItem {
                     appearWorkItem.cancel()
                     self.appearWorkItem = nil
@@ -51,22 +50,21 @@ struct ToastModifier: ViewModifier {
                     self.appearWorkItem = nil
                 }
             })
-            .animation(.spring, value: toastType)
+            .animation(.spring, value: toast)
     }
     
     func appearAction() {
         guard appearWorkItem == nil else {
             return
         }
-        if case .dismiss = toastType {
+        if case .dismiss = toast.action {
             return
-        } else if case .loading = toastType {
+        } else if case .loading = toast.action {
             return
         } else {
             let workItem = DispatchWorkItem {
-                toastType = .dismiss
+                toast(.dismiss)
             }
-
             appearWorkItem = workItem
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: workItem)
         }
@@ -74,11 +72,11 @@ struct ToastModifier: ViewModifier {
 }
 
 struct ToastStateView: View {
-    var toastType: ToastType
-    var config: ToastConfig
+    var toast: ToastState
+
     var stateOffset: CGFloat {
         let alignment = (hostSize.height - stateSize.height) * 0.5
-        if case .mesage = toastType {
+        if case .mesage = toast.action {
             return Const.topSpace - alignment
         }
         return (Const.screen.height - stateSize.height) * 0.5 - alignment
@@ -116,22 +114,22 @@ struct ToastStateView: View {
     
     @ViewBuilder
     var stateView: some View {
-        switch toastType {
-        case .loading(let text):
-            loadingView
-                .modifier(TitleBackgroundModifier(title: text, titleColor: config.loadingTintColor))
+        switch toast.action {
+        case .loading(let style, let text):
+            loadingView(style: style)
+                .modifier(TitleBackgroundModifier(title: text, titleColor: toast.config.loadingTintColor))
                 .transition(.opacity)
         case .error(let desc):
             AnimatedMark(type: .failure)
-                .modifier(TitleBackgroundModifier(title: desc, titleColor: config.errorTitleColor))
+                .modifier(TitleBackgroundModifier(title: desc, titleColor: toast.config.errorTitleColor))
                 .transition(.opacity)
         case .complete(let string):
             AnimatedMark(type: .success)
-                .modifier(TitleBackgroundModifier(title: string, titleColor: config.compleTitleColor))
+                .modifier(TitleBackgroundModifier(title: string, titleColor: toast.config.compleTitleColor))
                 .transition(.opacity)
         case .mesage(let title, let text):
-            HudTip(title: title, text: text, titleColor: config.titleColor,
-                   textColor: config.textColor, titleFont: config.titleFont, textFont: config.textFont)
+            HudTip(title: title, text: text, titleColor: toast.config.titleColor,
+                   textColor: toast.config.textColor, titleFont: toast.config.titleFont, textFont: toast.config.textFont)
                 .sizeReader(for: $stateSize)
                 .transition(.move(edge: .top).combined(with: .opacity))
             
@@ -140,11 +138,11 @@ struct ToastStateView: View {
         }
     }
     
-    var loadingView: some View {
+    func loadingView(style: ActivityIndicator.Style) -> some View {
 #if os(macOS)
-        ActivityIndicator()
+        ActivityIndicator(style: style)
 #else
-        ActivityIndicator(color: config.loadingTintColor.uiColor())
+        ActivityIndicator(style: style, color: toast.config.loadingTintColor.uiColor())
 #endif
     }
 }
@@ -155,7 +153,7 @@ fileprivate struct AnimatedMark: View {
     var color: Color = .white
     var type: MarkShape.Mode
     @State private var percentage: CGFloat = .zero
-    
+
     let wh: CGFloat = 20.0
     let bg1 = #colorLiteral(red: 0.2506295443, green: 0.5538730025, blue: 0.9573871493, alpha: 1)
     let bg2 = #colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1)
@@ -290,47 +288,5 @@ struct HudTip: View {
             .clipShape(Capsule())
             .shadow(radius: 10)
         #endif
-    }
-}
-
-class DemoModel: ObservableObject {
-    @ToastProvider([
-        .complete(titleColor: .blue)
-    ]) var toast
-}
-
-@available(iOS 14.0, *)
-struct Demo: View {
-    @StateObject var vm: DemoModel = .init()
-//    @Toast var toast
-    var body: some View {
-        ZStack {
-            
-            VStack {
-                Circle()
-                    .fill(.red)
-                    .frame(width: 200, height: 200)
-                    .onTapGesture(perform: {
-                        vm.toast = .loading("Loading...")
-                    })
-                
-                Button(action: {
-                    vm.toast = .dismiss
-                }, label: {
-                    Text("Dismiss")
-                })
-            }
-        }
-//        .toast(with: _toast)
-        .toast(with: $vm.toast, config: vm.$toast.config)
-    }
-}
-
-#Preview {
-    if #available(iOS 14.0, *) {
-        return Demo()
-    } else {
-        // Fallback on earlier versions
-        return EmptyView()
     }
 }

@@ -1,14 +1,14 @@
 ## Requirements
-- Xcode 12.x
+- Xcode 13.x
 - Swift 5.x
 
 
 ## Installation
 
-### [Swift Package Manager (SPM)](https://github.com/sandsn123/LSToast.git#swift-package-manager-spm)
+### [Swift Package Manager (SPM)](https://gitee.com/sandsn123/LSToast.git#swift-package-manager-spm)
 
 1. File -> Swift Packages -> Add Package Dependency...
-2. Enter package URL :https://github.com/sandsn123/LSToast.git, choose the latest release
+2. Enter package URL :https://gitee.com/sandsn123/LSToast.git, choose the latest release
 
 ## Usage
 
@@ -40,11 +40,11 @@
 
 
 <table width="100%">
-<th>Add ```.toast(with: _toast)```  at the end of the view you want to show toast.</th>
+<th>Add ```.toast(with: $toast)```  at the end of the view you want to show toast.</th>
 <tr>
 <td valign="top">
 <pre lang="Swift">
-    ZStack { ... }.toast(with: _toast)
+    ZStack { ... }.toast(with: $toast)
 </pre>
 </td>
 </tr>
@@ -54,8 +54,8 @@
 <tr>
 <td valign="top">
 <pre lang="Swift">
-    toast = .loading("Loading..."),
-    // toast = .mesage("title", text: "text"),
+    toast(.loading(.large, "Loading..."))
+    // toast(.mesage("title", text: "text"))
 </pre>
 </td>
 </tr>
@@ -66,19 +66,19 @@
 **Used in ObservableObject:**
 
 <table width="100%">
-<th>use @ToastPublished.</th>
+<th>Used in ObservableObject</th>
 <tr>
 <td valign="top">
 <pre lang="Swift">
  class DemoModel: ObservableObject {
-    @ToastPublished([
+    @ToastProvider([
         .complete(titleColor: .blue)
     ]) var toast
 }
 struct DemoView: View {
 	 var body: some View {
 				// your view
-			 .toast(with: $vm.toast, config: vm.$toast.config)
+			 .toast(with: $vm.toast)
 	 }
 }
 </pre>

@@ -3,62 +3,43 @@
 
 import SwiftUI
 
-struct ToastDemo: View {
-    
-    // custom style
-//    @Toast([
-//        // regiular message
-//        .message(titleColor: .blue, textColor: .red),
-//        // loading
-//        .loading(tintColor: .blue)
-//    ])
-    
-    @Toast  // default
-    var toast
-    
+class DemoModel: ObservableObject {
+    @ToastProvider([
+        .complete(titleColor: .red)
+    ]) var toast
+}
+
+@available(iOS 14.0, *)
+struct Demo: View {
+    @StateObject var vm: DemoModel = .init()
+//    @Toast var toast
     var body: some View {
         ZStack {
-            Color(white: 0.7).edgesIgnoringSafeArea(.all)
             
-            Color.blue
-                .frame(width: 100, height: 45)
-                .onTapGesture {
-                    toast = .loading("Loading...")
-                    
-                    Task {
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        toast = .error("Error!!!")
-                    }
-                }
-   
-            Button(action: {
-                toast = .dismiss
-            }, label: {
-                RoundedRectangle(cornerRadius: 5.0)
+            VStack {
+                Circle()
                     .fill(.red)
-                    .overlay(
-                        Text("Dismiss")
-                            .font(.title)
-                            .foregroundColor(.white)
-                    )
-            })
-            .offset(y: 80)
-            .frame(width: 100, height: 45)
+                    .frame(width: 200, height: 200)
+                    .onTapGesture(perform: {
+                        vm.toast(.complete("Success!!!"))
+                    })
+                
+                Button(action: {
+                    vm.toast(.dismiss)
+                }, label: {
+                    Text("Dismiss")
+                })
+            }
         }
-        .toast(with: _toast)
+        .toast(with: $vm.toast)
     }
 }
 
-
 #Preview {
-    NavigationView {
-        ToastDemo()
-        #if os(macOS)
-            .navigationTitle("Title")
-        #else
-            .navigationBarTitle(Text("title"), displayMode: .large)
-        #endif
-            
+    if #available(iOS 14.0, *) {
+        return Demo()
+    } else {
+        // Fallback on earlier versions
+        return EmptyView()
     }
-//    ToastDemo()
 }

@@ -3,10 +3,10 @@
     {
       "identity" : "lsswiftmacros",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sandsn123/LSSwiftMacros.git",
+      "location" : "https://gitee.com/sandsn123/LSSwiftMacros.git",
       "state" : {
         "branch" : "main",
-        "revision" : "fb7d5543dcdddc0f6c90b0a362836511c589c7f4"
+        "revision" : "e37405742834fb7361c414943ea08597a7878d7b"
       }
     },
     {
@@ -21,10 +21,10 @@
     {
       "identity" : "swiftuimisc",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sandsn123/SwiftUIMisc.git",
+      "location" : "https://gitee.com/sandsn123/SwiftUIMisc.git",
       "state" : {
         "branch" : "main",
-        "revision" : "f40a8f3010a8a9df9ab6586f5ac0c29487b39235"
+        "revision" : "df7703ac0c03adf474e8edc92b21a1f8578433c9"
       }
     }
   ],

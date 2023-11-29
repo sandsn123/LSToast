@@ -10,20 +10,21 @@ import SwiftUI
 import UIKit
 #endif
 import Combine
+import SwiftUIMisc
 
-public enum ToastType {
-    case loading(_ text: String? = nil)
+public enum ToastAction {
+    case loading(_ style: ActivityIndicator.Style = .medium, _ text: String? = nil)
     case error(String)
     case complete(String)
     case mesage(_ title: String? = nil, text: String? = nil)
     case dismiss
 }
 
-extension ToastType: Equatable {
-    public static func == (lhs: ToastType, rhs: ToastType) -> Bool {
+extension ToastAction: Equatable {
+    public static func == (lhs: ToastAction, rhs: ToastAction) -> Bool {
         switch lhs {
-        case .loading(let lstr):
-            if case .loading(let rstr) = rhs {
+        case .loading(_, let lstr):
+            if case .loading(_, let rstr) = rhs {
                 return lstr == rstr
             }
             return false
@@ -53,14 +54,35 @@ extension ToastType: Equatable {
 
 @propertyWrapper
 public struct Toast: DynamicProperty {
-    @State public var wrappedValue: ToastType = .dismiss
-    public let config: ToastConfig
+    @State public var wrappedValue: ToastState
+    
+    public var projectedValue: Binding<ToastState> {
+        Binding {
+            wrappedValue
+        } set: {
+            wrappedValue = $0
+        }
+    }
+    
     public var isPresenting: Bool {
-        wrappedValue != .dismiss
+        wrappedValue.action != .dismiss
     }
     
     public init(_ options: [ToastConfig.Option] = []) {
-        self.config = ToastConfig(options: options)
+        self._wrappedValue = State(initialValue: ToastState(action: .dismiss, config: ToastConfig(options: options)))
+    }
+}
+
+public struct ToastState: Equatable {
+    private(set) var action: ToastAction = .dismiss
+    public let config: ToastConfig
+    
+    mutating public func callAsFunction(_ value: ToastAction) {
+        action = value
+    }
+
+    public static func == (lhs: ToastState, rhs: ToastState) -> Bool {
+        return lhs.action == rhs.action
     }
 }
 
@@ -74,6 +96,8 @@ public struct ToastConfig {
     public var errorTitleColor = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1))
     public var loadingTintColor = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1))
     
+    public var indicatorStyle: ActivityIndicator.Style = .medium
+    
     public init(options: [Option] = []) {
         for option in options {
             switch option {
@@ -84,7 +108,8 @@ public struct ToastConfig {
                 self.compleTitleColor = titleColor
             case .error(let titleColor):
                 self.errorTitleColor = titleColor
-            case .loading(let tintColor):
+            case .loading(let style, let tintColor):
+                self.indicatorStyle = style
                 self.loadingTintColor = tintColor
             }
         }
@@ -94,18 +119,18 @@ public struct ToastConfig {
         case message(titleColor: Color = Color(#colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)), textColor: Color = Color(#colorLiteral(red: 0.4, green: 0.4, blue: 0.4, alpha: 1)))
         case complete(titleColor: Color = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1)))
         case error(titleColor: Color = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1)))
-        case loading(tintColor: Color = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1)))
+        case loading(style: ActivityIndicator.Style, tintColor: Color = Color(#colorLiteral(red: 0.04735630006, green: 0.4727236032, blue: 0.9543274045, alpha: 1)))
     }
 }
 
 public extension View {
     @ViewBuilder
-    func toast(with toast: Toast) -> some View {
-        modifier(ToastModifier(type: toast.$wrappedValue, config: toast.config))
+    func toast(with toast: Binding<ToastState>) -> some View {
+        modifier(ToastModifier(type: toast))
     }
     
-    @ViewBuilder
-    func toast(with type: Binding<ToastType>, config: ToastConfig) -> some View {
-        modifier(ToastModifier(type: type, config: config))
-    }
+//    @ViewBuilder
+//    func toast(with type: Binding<ToastAction>, config: ToastConfig) -> some View {
+//        modifier(ToastModifier(type: type, config: config))
+//    }
 }
