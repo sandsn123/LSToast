@@ -12,7 +12,7 @@ import UIKit
 import Combine
 import SwiftUIMisc
 
-public enum ToastAction {
+public enum ToastStyle {
     case loading(_ style: ActivityIndicator.Style = .medium, _ text: String? = nil)
     case error(String)
     case complete(String)
@@ -20,8 +20,8 @@ public enum ToastAction {
     case dismiss
 }
 
-extension ToastAction: Equatable {
-    public static func == (lhs: ToastAction, rhs: ToastAction) -> Bool {
+extension ToastStyle: Equatable {
+    public static func == (lhs: ToastStyle, rhs: ToastStyle) -> Bool {
         switch lhs {
         case .loading(_, let lstr):
             if case .loading(_, let rstr) = rhs {
@@ -54,9 +54,9 @@ extension ToastAction: Equatable {
 
 @propertyWrapper
 public struct Toast: DynamicProperty {
-    @State public var wrappedValue: ToastState
+    @State public var wrappedValue: ToastAction
     
-    public var projectedValue: Binding<ToastState> {
+    public var projectedValue: Binding<ToastAction> {
         Binding {
             wrappedValue
         } set: {
@@ -65,24 +65,24 @@ public struct Toast: DynamicProperty {
     }
     
     public var isPresenting: Bool {
-        wrappedValue.action != .dismiss
+        wrappedValue.style != .dismiss
     }
     
     public init(_ options: [ToastConfig.Option] = []) {
-        self._wrappedValue = State(initialValue: ToastState(action: .dismiss, config: ToastConfig(options: options)))
+        self._wrappedValue = State(initialValue: ToastAction(style: .dismiss, config: ToastConfig(options: options)))
     }
 }
 
-public struct ToastState: Equatable {
-    private(set) var action: ToastAction = .dismiss
+public struct ToastAction: Equatable {
+    private(set) var style: ToastStyle = .dismiss
     public let config: ToastConfig
     
-    mutating public func callAsFunction(_ value: ToastAction) {
-        action = value
+    mutating public func callAsFunction(_ value: ToastStyle) {
+        style = value
     }
 
-    public static func == (lhs: ToastState, rhs: ToastState) -> Bool {
-        return lhs.action == rhs.action
+    public static func == (lhs: ToastAction, rhs: ToastAction) -> Bool {
+        return lhs.style == rhs.style
     }
 }
 
@@ -125,7 +125,7 @@ public struct ToastConfig {
 
 public extension View {
     @ViewBuilder
-    func toast(with toast: Binding<ToastState>) -> some View {
+    func toast(with toast: Binding<ToastAction>) -> some View {
         modifier(ToastModifier(type: toast))
     }
     

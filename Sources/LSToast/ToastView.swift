@@ -10,11 +10,11 @@ import SwiftUIMisc
 
 struct ToastModifier: ViewModifier {
     
-    @Binding var toast: ToastState
+    @Binding var toast: ToastAction
 
     @State var appearWorkItem: DispatchWorkItem?
     
-    init(type: Binding<ToastState>) {
+    init(type: Binding<ToastAction>) {
         self._toast = Binding(get: {
             type.wrappedValue
         }, set: { value in
@@ -57,9 +57,9 @@ struct ToastModifier: ViewModifier {
         guard appearWorkItem == nil else {
             return
         }
-        if case .dismiss = toast.action {
+        if case .dismiss = toast.style {
             return
-        } else if case .loading = toast.action {
+        } else if case .loading = toast.style {
             return
         } else {
             let workItem = DispatchWorkItem {
@@ -72,11 +72,11 @@ struct ToastModifier: ViewModifier {
 }
 
 struct ToastStateView: View {
-    var toast: ToastState
+    var toast: ToastAction
 
     var stateOffset: CGFloat {
         let alignment = (hostSize.height - stateSize.height) * 0.5
-        if case .mesage = toast.action {
+        if case .mesage = toast.style {
             return Const.topSpace - alignment
         }
         return (Const.screen.height - stateSize.height) * 0.5 - alignment
@@ -114,7 +114,7 @@ struct ToastStateView: View {
     
     @ViewBuilder
     var stateView: some View {
-        switch toast.action {
+        switch toast.style {
         case .loading(let style, let text):
             loadingView(style: style)
                 .modifier(TitleBackgroundModifier(title: text, titleColor: toast.config.loadingTintColor))
