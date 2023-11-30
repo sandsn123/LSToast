@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension EnvironmentValues {
-    var toast: ToastAction {
+    var toast: Binding<ToastAction> {
         get {
             return self[ToastEnvironmentKey.self]
         }
@@ -19,5 +19,11 @@ public extension EnvironmentValues {
 }
 
 struct ToastEnvironmentKey: EnvironmentKey {
-    static var defaultValue: ToastAction = .init(style: .dismiss)
+    static var defaultValue: Binding<ToastAction> = .constant(.init(style: .dismiss))
+}
+
+extension Binding where Value == ToastAction {
+    public func callAsFunction(_ value: ToastStyle) {
+        wrappedValue(value)
+    }
 }

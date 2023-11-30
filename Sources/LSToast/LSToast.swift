@@ -13,26 +13,40 @@ class DemoModel: ObservableObject {
 @available(iOS 14.0, *)
 struct Demo: View {
     @StateObject var vm: DemoModel = .init()
-//    @Toast var toast
+    @Toast var toast
     var body: some View {
         ZStack {
             
-            VStack {
+            VStack(spacing: 30) {
                 Circle()
                     .fill(.red)
+                    .overlay(Text("Tap to toast"))
                     .frame(width: 200, height: 200)
                     .onTapGesture(perform: {
-                        vm.toast(.loading())
+                        toast(.loading())
                     })
                 
                 Button(action: {
-                    vm.toast(.dismiss)
+                    toast(.dismiss)
                 }, label: {
                     Text("Dismiss")
                 })
+                
+                ChildView()
+                    .environment(\.toast, $toast)
             }
         }
-        .toast(with: $vm.toast)
+        .toast(with: $toast)
+    }
+}
+
+struct ChildView: View {
+    @Environment(\.toast) var toast
+    var body: some View {
+        Text("ChildView")
+            .onTapGesture {
+                toast(.complete("ChildView complete!!"))
+            }
     }
 }
 
