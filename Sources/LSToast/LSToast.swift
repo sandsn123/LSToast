@@ -22,7 +22,7 @@ struct Demo: View {
                     .fill(.red)
                     .frame(width: 200, height: 200)
                     .onTapGesture(perform: {
-                        vm.toast(.loading("Success!!!"))
+                        vm.toast(.loading())
                     })
                 
                 Button(action: {
